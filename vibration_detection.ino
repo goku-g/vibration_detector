@@ -102,21 +102,23 @@ void loop() {
     analogWrite(buzzer, 0);
   }
   
-//  Serial.print("X");
-//  Serial.println(xchange);
-//  Serial.print("Y");
-//  Serial.println(ychange);
-//  Serial.print("Z");
-//  Serial.println(zchange);
-//  Serial.println(" $");
-
   lcd.setCursor(0,0);
   lcd.print("X: ");
-  lcd.print(int(xvalue));
+  lcd.print(int(xchange));
   lcd.setCursor(9,0);
   lcd.print("Y: ");
-  lcd.print(int(yvalue));
+  lcd.print(int(ychange));
   lcd.setCursor(0,1);
   lcd.print("Z: ");
-  lcd.print(int(zvalue));
+  lcd.print(int(zchange));
+
+//  lcd.setCursor(0,0);
+//  lcd.print("X: ");
+//  lcd.print(int(xvalue));
+//  lcd.setCursor(9,0);
+//  lcd.print("Y: ");
+//  lcd.print(int(yvalue));
+//  lcd.setCursor(0,1);
+//  lcd.print("Z: ");
+//  lcd.print(int(zvalue));
 }
