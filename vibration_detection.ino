@@ -23,21 +23,16 @@ int buztime = 3000;
 double xvalue, yvalue, zvalue;
 double xchange, ychange, zchange;
 
-
-void setup() {
-  // put your setup code here, to run once:
-  pinMode(led, OUTPUT);
-  // pinMode(buzzer, OUTPUT);
-
-  lcd.init();                      // initialize the lcd 
-  lcd.init();
-  // Print a message to the LCD.
-  lcd.backlight();
-  
-  //Serial.begin(9600);
+void calibrate_now()
+{
+  lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Calibrating....");
 
+  xsample = 0;
+  ysample = 0;
+  zsample = 0;
+  
   for(int i=0; i<samples; i++)
   {
     xsample += analogRead(xpin);
@@ -55,6 +50,20 @@ void setup() {
   lcd.print("Calibrated !");
   delay(1000);
   lcd.clear();
+}
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(led, OUTPUT);
+  // pinMode(buzzer, OUTPUT);
+
+  lcd.init();                      // initialize the lcd 
+  lcd.init();
+  // Print a message to the LCD.
+  lcd.backlight();
+  
+  //Serial.begin(9600);
+  calibrate_now();
 
 }
 
@@ -84,6 +93,7 @@ void loop() {
     // Buz upto 5 second in earthquake:
     if(millis() >= start+buztime)
     {
+      calibrate_now();
       alt = false;
       lcd.setCursor(7,1);
       lcd.print("           ");
