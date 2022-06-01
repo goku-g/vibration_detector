@@ -14,14 +14,23 @@ double xsample = 0;
 double ysample = 0;
 double zsample = 0;
 
+int RawMin = 0;
+int RawMax = 1023;
+
 double start;
 int samples = 200;
-int limit = 20;
+
+// change with your need:
+float limit = 0.06;
+
 bool alt = false;
 int buztime = 3000;
 
 double xvalue, yvalue, zvalue;
 double xchange, ychange, zchange;
+
+long xScaled, yScaled, zScaled;
+float xAccel, yAccel, zAccel;
 
 void calibrate_now()
 {
@@ -43,6 +52,16 @@ void calibrate_now()
   xsample /= samples;
   ysample /= samples;
   zsample /= samples;
+
+  // Convert raw values to 'milli-Gs"
+  long xScale = map(xsample, RawMin, RawMax, -3000, 3000);
+  long yScale = map(ysample, RawMin, RawMax, -3000, 3000);
+  long zScale = map(zsample, RawMin, RawMax, -3000, 3000);
+
+  // re-scale to fractional Gs
+  xsample = xScale / 1000.0;
+  ysample = yScale / 1000.0;
+  zsample = zScale / 1000.0;
   
   delay(1000);
   lcd.clear();
@@ -73,10 +92,20 @@ void loop() {
   yvalue = analogRead(ypin);
   zvalue = analogRead(zpin);
 
-  xchange = xsample-xvalue;
-  ychange = ysample-yvalue;
-  zchange = zsample-zvalue;
+  xScaled = map(xvalue, RawMin, RawMax, -3000, 3000);
+  yScaled = map(yvalue, RawMin, RawMax, -3000, 3000);
+  zScaled = map(zvalue, RawMin, RawMax, -3000, 3000);
 
+  // re-scale to fractional Gs
+  xAccel = xScaled / 1000.0;
+  yAccel = yScaled / 1000.0;
+  zAccel = zScaled / 1000.0;
+
+
+  xchange = xsample-xAccel;
+  ychange = ysample-yAccel;
+  zchange = zsample-zAccel;
+  
   // Vibration detection algorithm:
   if(abs(xchange) > limit || abs(ychange) > limit || abs(zchange) > limit)
   {
@@ -87,7 +116,7 @@ void loop() {
   }
   else if(alt)
   {
-    lcd.setCursor(7,1);
+    lcd.setCursor(9,1);
     lcd.print("ALERT!!!");
     
     // Buz upto 5 second in earthquake:
@@ -95,7 +124,7 @@ void loop() {
     {
       calibrate_now();
       alt = false;
-      lcd.setCursor(7,1);
+      lcd.setCursor(9,1);
       lcd.print("           ");
     }
   }
@@ -113,14 +142,14 @@ void loop() {
   }
   
   lcd.setCursor(0,0);
-  lcd.print("X: ");
-  lcd.print(int(xchange));
+  lcd.print("X:");
+  lcd.print(xchange, 2);
   lcd.setCursor(9,0);
-  lcd.print("Y: ");
-  lcd.print(int(ychange));
+  lcd.print("Y:");
+  lcd.print(ychange, 2);
   lcd.setCursor(0,1);
-  lcd.print("Z: ");
-  lcd.print(int(zchange));
+  lcd.print("Z:");
+  lcd.print(zchange, 2);
 
 //  lcd.setCursor(0,0);
 //  lcd.print("X: ");
